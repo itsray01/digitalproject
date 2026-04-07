@@ -492,13 +492,52 @@ body[data-passage="EndingChoice"] .overlay-wrapper.ending-choice-only {
   }
 }</style><script role="script" id="twine-user-script" type="text/twine-javascript">/* ================================
    Echoes of Control – Safe Story JS
-   + Typewriter with looping sound bed for EndingChoice
+   + Global looping ambience
+   + EndingChoice typewriter sound
    ================================ */
 
+const GLOBAL_AMBIENCE_URL = "https://github.com/itsray01/digitalproject/releases/download/Artefact_Edit/dark-ambient-drone-.mp3";
 const TYPEWRITER_AUDIO_URL = "https://github.com/itsray01/digitalproject/releases/download/Artefact_Edit/typewriter_tick.mp3";
 
+let globalAmbienceAudio = null;
 let endingTypewriterAudio = null;
 
+/* ---------- Global ambience ---------- */
+function ensureGlobalAmbience() {
+  if (globalAmbienceAudio) return;
+
+  try {
+    globalAmbienceAudio = new Audio(GLOBAL_AMBIENCE_URL);
+    globalAmbienceAudio.loop = true;
+    globalAmbienceAudio.volume = 0.09;
+    globalAmbienceAudio.preload = "auto";
+  } catch (e) {
+    console.warn("Failed to create global ambience audio:", e);
+  }
+}
+
+function startGlobalAmbience() {
+  ensureGlobalAmbience();
+  if (!globalAmbienceAudio) return;
+
+  try {
+    globalAmbienceAudio.play().catch(function (err) {
+      console.warn("Global ambience audio blocked:", err);
+    });
+  } catch (e) {
+    console.warn("Failed to start global ambience audio:", e);
+  }
+}
+
+function stopGlobalAmbience() {
+  if (!globalAmbienceAudio) return;
+  try {
+    globalAmbienceAudio.pause();
+    globalAmbienceAudio.currentTime = 0;
+  } catch (e) {}
+}
+
+/* ---------- EndingChoice typewriter sound ---------- */
 function stopEndingTypewriterAudio() {
   if (!endingTypewriterAudio) return;
   try {
@@ -576,12 +615,13 @@ function typewriterEndingChoice() {
   typeNext();
 }
 
-/* IntroScreen button */
+/* ---------- Intro button ---------- */
 $(document).on('click', '#begin-btn', function () {
+  startGlobalAmbience();
   Engine.play('OutsideSetup');
 });
 
-/* Passage logic */
+/* ---------- Passage logic ---------- */
 $(document).on(':passagedisplay', function (ev) {
   var title = ev.passage.title;
   document.body.setAttribute('data-passage', title);
@@ -620,7 +660,6 @@ $(document).on(':passagedisplay', function (ev) {
       overlay.classList.add('show-choice');
     };
 
-    /* Fallback if video fails to load */
     video.onerror = function () {
       overlay.classList.add('show-subtitle');
       overlay.classList.add('show-choice');
