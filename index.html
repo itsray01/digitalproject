@@ -226,25 +226,32 @@ body[data-passage="EndingChoice"] .overlay-wrapper::before {
 #subtitle-box,
 #choice-box {
   opacity: 0;
+  visibility: hidden;
   transform: translateY(8px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s linear 0.35s;
 }
 
 .overlay-wrapper.show-subtitle #subtitle-box {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s linear 0s;
 }
 
 .overlay-wrapper.show-choice #choice-box {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s linear 0s;
 }
 
 /* IntroScreen button visible immediately */
 #choice-box.start-choice {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
   pointer-events: auto;
+  transition: none;
 }
 
 
@@ -339,9 +346,16 @@ body[data-passage="EndingChoice"] #choice-box {
   color: #fff;
   cursor: pointer;
   white-space: nowrap;
-  pointer-events: auto;
+  pointer-events: none;
   font-family: 'ElixiaUI', system-ui, sans-serif;
   transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Buttons only become clickable when actually shown */
+.overlay-wrapper.show-choice #choice-box a,
+.overlay-wrapper.show-choice #press-any-key,
+#choice-box.start-choice #begin-btn {
+  pointer-events: auto;
 }
 
 #press-any-key:hover,
